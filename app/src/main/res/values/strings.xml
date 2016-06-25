@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Current Weather</string>
+
+    <array name="city">
+        <item>Kazan</item>
+        <item>Moscow</item>
+        <item>Sankt-Peterburg</item>
+        <item>Volgograd</item>
+        <item>Vladivostok</item>
+    </array>
+</resources>
