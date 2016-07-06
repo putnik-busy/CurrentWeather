@@ -15,6 +15,7 @@ public class MyApplication extends Application {
             .getSimpleName();
     private Weather weather;
     private DataBaseHelper db;
+    private String cityAdd;
 
     private RequestQueue mRequestQueue;
     private static MyApplication mInstance;
@@ -27,7 +28,7 @@ public class MyApplication extends Application {
         weather = new Weather();
     }
 
-    public static synchronized MyApplication getInstance() {
+    public synchronized static MyApplication getInstance() {
         return mInstance;
     }
 
@@ -66,7 +67,11 @@ public class MyApplication extends Application {
         return db;
     }
 
-    public void setDb(DataBaseHelper db) {
-        this.db = db;
+    public String getCityAdd() {
+        return cityAdd;
+    }
+
+    public void setCityAdd(String cityAdd) {
+        this.cityAdd = cityAdd;
     }
 }

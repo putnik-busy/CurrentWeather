@@ -9,7 +9,7 @@ public interface DatabaseHandler<T> {
 
     void addCity(Weather weather);
 
-    void addListCity(String [] name);
+    void addListCity(String[] name);
 
     List<Weather> getAllCity();
 

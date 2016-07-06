@@ -1,17 +1,15 @@
 package com.example.sergey.currentweather.model;
 
-public class Weather  {
+public class Weather {
 
-    long id;
-    public Location location  = new Location();
+    long cityID;
+    String nameCity;
+    byte[] iconArray;
+    public Location location = new Location();
     public CurrentCondition currentCondition = new CurrentCondition();
     public Temperature temperature = new Temperature();
     public Wind wind = new Wind();
-    public Rain rain = new Rain();
-    public Snow snow = new Snow();
     public Clouds clouds = new Clouds();
-
-    public byte[] iconData;
 
     public class CurrentCondition {
         private int weatherId;
@@ -122,48 +120,6 @@ public class Weather  {
         }
     }
 
-    public class Rain {
-        private String time;
-        private float amount;
-
-        public String getTime() {
-            return time;
-        }
-
-        public void setTime(String time) {
-            this.time = time;
-        }
-
-        public float getAmount() {
-            return amount;
-        }
-
-        public void setAmount(float amount) {
-            this.amount = amount;
-        }
-    }
-
-    public class Snow {
-        private String time;
-        private float amount;
-
-        public String getTime() {
-            return time;
-        }
-
-        public void setTime(String time) {
-            this.time = time;
-        }
-
-        public float getAmount() {
-            return amount;
-        }
-
-        public void setAmount(float amount) {
-            this.amount = amount;
-        }
-    }
-
     public class Clouds {
         private int perc;
 
@@ -176,11 +132,27 @@ public class Weather  {
         }
     }
 
-    public long getId() {
-        return id;
+    public long getCityID() {
+        return cityID;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setCityID(long cityID) {
+        this.cityID = cityID;
+    }
+
+    public byte[] getIconArray() {
+        return iconArray;
+    }
+
+    public void setIconArray(byte[] iconArray) {
+        this.iconArray = iconArray;
+    }
+
+    public String getNameCity() {
+        return nameCity;
+    }
+
+    public void setNameCity(String nameCity) {
+        this.nameCity = nameCity;
     }
 }

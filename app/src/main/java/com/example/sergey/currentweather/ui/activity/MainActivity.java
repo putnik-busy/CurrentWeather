@@ -16,6 +16,7 @@ import com.example.sergey.currentweather.db.DataBaseHelper;
 import com.example.sergey.currentweather.model.Weather;
 import com.example.sergey.currentweather.ui.fragment.MainFragment;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,8 +30,6 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         recordListCity();
-
-
     }
 
     public void initFragment(Fragment fragment) {
@@ -43,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = MyApplication.getInstance().getDb().getReadableDatabase();
         if (!doesTableExist(db, "City")) {
             saveData();
-        }else {
+        } else {
             read();
             initFragment(MainFragment.newInstance());
         }
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         MyApplication.getInstance().getDb().addListCityAsync(citiesNames, new DataBaseHelper.DatabaseHand<Void>() {
             @Override
             public void onComplete(boolean success, Void result) {
-                if (success){
+                if (success) {
                     initFragment(MainFragment.newInstance());
                     read();
                 }
@@ -82,9 +81,25 @@ public class MainActivity extends AppCompatActivity {
                 if (success) {
                     for (Weather cn : result) {
                         String log =
-                                "Id: " + cn.getId() + "\n" +
+                                "Id: " + cn.getCityID() + "\n" +
                                         " , name_city: " + cn.location.getCity() + "\n" +
-                                        " , temp_city: " + cn.temperature.getTemp() + "\n";
+                                        " , lon: " + cn.location.getLongitude() + "\n" +
+                                        " , lat: " + cn.location.getLatitude() + "\n" +
+                                        " , country: " + cn.location.getCountry() + "\n" +
+                                        " , sunrise: " + cn.location.getSunrise() + "\n" +
+                                        " , sunset: " + cn.location.getSunset() + "\n" +
+                                        " , weather_id: " + cn.currentCondition.getWeatherId() + "\n" +
+                                        " , description: " + cn.currentCondition.getDescr() + "\n" +
+                                        " , main: " + cn.currentCondition.getCondition() + "\n" +
+                                        " , icon: " + cn.currentCondition.getIcon() + "\n" +
+                                        " , humidity: " + cn.currentCondition.getHumidity() + "\n" +
+                                        " , pressure: " + cn.currentCondition.getPressure() + "\n" +
+                                        " , temp_max: " + cn.temperature.getMaxTemp() + "\n" +
+                                        " , temp_min: " + cn.temperature.getMinTemp() + "\n" +
+                                        " , speed: " + cn.wind.getSpeed() + "\n" +
+                                        " , deg: " + cn.wind.getDeg() + "\n" +
+                                        " , all: " + cn.clouds.getPerc() + "\n" +
+                                        " , icon_array: " + Arrays.toString(cn.getIconArray()) + "\n";
                         Log.d("TAG", log);
                     }
                 }

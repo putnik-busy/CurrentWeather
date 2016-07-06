@@ -17,9 +17,27 @@ public class DataBaseHelper extends SQLiteOpenHelper implements DatabaseHandler 
 
     static final String dbName = "cityDB";
     static final String list_cityTable = "City";
-    static final String keyID = "id";
+    //rows
+    static final String keyID = "keyID";
     static final String nameCity = "nameCity";
-    static final String tempCity = "tempCity";
+    static final String lonCity = "lonCity";
+    static final String latCity = "latCity";
+    static final String countryCity = "countryCity";
+    static final String sunriseCity = "sunriseCity";
+    static final String sunsetCity = "sunsetCity";
+    static final String idWeather = "idWeather";
+    static final String description = "description";
+    static final String main = "main";
+    static final String icon = "icon";
+    static final String humidity = "humidity";
+    static final String pressure = "pressure";
+    static final String temp_max = "temp_max";
+    static final String temp_min = "temp_min";
+    static final String temp = "temp";
+    static final String speed = "speed";
+    static final String deg = "deg";
+    static final String all = "allClouds";
+    static final String sIconArray = "iconArray";
     static final int DATABASE_VERSION = 1;
 
     public interface DatabaseHand<T> {
@@ -59,8 +77,13 @@ public class DataBaseHelper extends SQLiteOpenHelper implements DatabaseHandler 
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CITY_TABLE = "CREATE TABLE " + list_cityTable + "(" +
-                keyID + " INTEGER PRIMARY KEY AUTOINCREMENT," + nameCity + " TEXT," +
-                tempCity + " REAL" + ")";
+                keyID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                nameCity + " TEXT," + lonCity + " TEXT," + latCity + " TEXT," +
+                countryCity + " TEXT," + sunriseCity + " TEXT," + sunsetCity + " TEXT," +
+                idWeather + " TEXT," + description + " TEXT," + main + " TEXT," +
+                icon + " TEXT," + humidity + " TEXT," + pressure + " TEXT," +
+                temp_max + " REAL," + temp_min + " REAL," + temp + " REAL," +
+                speed + " TEXT," + deg + " TEXT," + all + " TEXT," + sIconArray + " BLOB" + ")";
         db.execSQL(CREATE_CITY_TABLE);
     }
 
@@ -74,12 +97,8 @@ public class DataBaseHelper extends SQLiteOpenHelper implements DatabaseHandler 
     public void addCity(Weather weather) {
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues values = new ContentValues();
-
-        values.put(nameCity, weather.location.getCity());
-        values.put(tempCity, weather.temperature.getTemp());
-
-        long id = db.insert(list_cityTable, null, values);
-        weather.setId(id);
+        values.put(nameCity, weather.getNameCity());
+        db.insert(list_cityTable, null, values);
         db.close();
     }
 
@@ -134,9 +153,26 @@ public class DataBaseHelper extends SQLiteOpenHelper implements DatabaseHandler 
         if (cursor.moveToFirst()) {
             do {
                 Weather weather = new Weather();
-                weather.setId(cursor.getInt(0));
-                weather.location.setCity(cursor.getString(1));
-                weather.temperature.setTemp(cursor.getFloat(2));
+                weather.setCityID(cursor.getInt(cursor.getColumnIndex(DataBaseHelper.keyID)));
+                weather.location.setCity(cursor.getString(cursor.getColumnIndex(DataBaseHelper.nameCity)));
+                weather.location.setLongitude(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.lonCity)));
+                weather.location.setLatitude(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.latCity)));
+                weather.location.setCountry(cursor.getString(cursor.getColumnIndex(DataBaseHelper.countryCity)));
+                weather.location.setSunrise(cursor.getLong(cursor.getColumnIndex(DataBaseHelper.sunriseCity)));
+                weather.location.setSunset(cursor.getLong(cursor.getColumnIndex(DataBaseHelper.sunsetCity)));
+                weather.currentCondition.setWeatherId(cursor.getInt(cursor.getColumnIndex(DataBaseHelper.idWeather)));
+                weather.currentCondition.setDescr(cursor.getString(cursor.getColumnIndex(DataBaseHelper.description)));
+                weather.currentCondition.setCondition(cursor.getString(cursor.getColumnIndex(DataBaseHelper.main)));
+                weather.currentCondition.setIcon(cursor.getString(cursor.getColumnIndex(DataBaseHelper.icon)));
+                weather.currentCondition.setHumidity(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.humidity)));
+                weather.currentCondition.setPressure(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.pressure)));
+                weather.temperature.setMaxTemp(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.temp_max)));
+                weather.temperature.setMinTemp(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.temp_min)));
+                weather.temperature.setTemp(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.temp)));
+                weather.wind.setSpeed(cursor.getFloat(cursor.getColumnIndex(speed)));
+                weather.wind.setDeg(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.deg)));
+                weather.clouds.setPerc(cursor.getInt(cursor.getColumnIndex(DataBaseHelper.all)));
+                weather.setIconArray(cursor.getBlob(cursor.getColumnIndex(DataBaseHelper.sIconArray)));
                 weatherList.add(weather);
             } while (cursor.moveToNext());
         }
@@ -158,12 +194,29 @@ public class DataBaseHelper extends SQLiteOpenHelper implements DatabaseHandler 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(nameCity, weather.location.getCity());
-        values.put(tempCity, weather.temperature.getTemp());
+        values.put(lonCity, weather.location.getLongitude());
+        values.put(latCity, weather.location.getLatitude());
+        values.put(countryCity, weather.location.getCountry());
+        values.put(sunriseCity, weather.location.getSunrise());
+        values.put(sunsetCity, weather.location.getSunset());
+        values.put(idWeather, weather.currentCondition.getWeatherId());
+        values.put(description, weather.currentCondition.getDescr());
+        values.put(main, weather.currentCondition.getCondition());
+        values.put(icon, weather.currentCondition.getIcon());
+        values.put(humidity, weather.currentCondition.getHumidity());
+        values.put(pressure, weather.currentCondition.getPressure());
+        values.put(temp_max, weather.temperature.getMaxTemp());
+        values.put(temp_min, weather.temperature.getMinTemp());
+        values.put(temp, weather.temperature.getTemp());
+        values.put(speed, weather.wind.getSpeed());
+        values.put(deg, weather.wind.getDeg());
+        values.put(all, weather.clouds.getPerc());
+        values.put(sIconArray, weather.getIconArray());
         return db.update(list_cityTable, values, keyID + " =?",
-                new String[]{String.valueOf(weather.getId())});
+                new String[]{String.valueOf(weather.getCityID())});
     }
 
-    public void updateCityAsync(final Weather weather, DatabaseHand<Integer> handler) {
+    public synchronized void updateCityAsync(final Weather weather, DatabaseHand<Integer> handler) {
         new DatabaseAsyncTask<Integer>(handler) {
             @Override
             protected Integer executeMethod() {
@@ -176,7 +229,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements DatabaseHandler 
     public void deleteCity(Weather weather) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(list_cityTable, keyID + " = ?",
-                new String[]{String.valueOf(weather.getId())});
+                new String[]{String.valueOf(weather.getCityID())});
         db.close();
     }
 
@@ -189,9 +242,26 @@ public class DataBaseHelper extends SQLiteOpenHelper implements DatabaseHandler 
         try {
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
-                weather.setId(cursor.getInt(0));
-                weather.location.setCity(cursor.getString(1));
-                weather.temperature.setTemp(cursor.getFloat(2));
+                weather.setCityID(cursor.getInt(cursor.getColumnIndex(DataBaseHelper.keyID)));
+                weather.location.setCity(cursor.getString(cursor.getColumnIndex(DataBaseHelper.nameCity)));
+                weather.location.setLongitude(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.lonCity)));
+                weather.location.setLatitude(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.latCity)));
+                weather.location.setCountry(cursor.getString(cursor.getColumnIndex(DataBaseHelper.countryCity)));
+                weather.location.setSunrise(cursor.getLong(cursor.getColumnIndex(DataBaseHelper.sunriseCity)));
+                weather.location.setSunset(cursor.getLong(cursor.getColumnIndex(DataBaseHelper.sunsetCity)));
+                weather.currentCondition.setWeatherId(cursor.getInt(cursor.getColumnIndex(DataBaseHelper.idWeather)));
+                weather.currentCondition.setDescr(cursor.getString(cursor.getColumnIndex(DataBaseHelper.description)));
+                weather.currentCondition.setCondition(cursor.getString(cursor.getColumnIndex(DataBaseHelper.main)));
+                weather.currentCondition.setIcon(cursor.getString(cursor.getColumnIndex(DataBaseHelper.icon)));
+                weather.currentCondition.setHumidity(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.humidity)));
+                weather.currentCondition.setPressure(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.pressure)));
+                weather.temperature.setMaxTemp(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.temp_max)));
+                weather.temperature.setMinTemp(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.temp_min)));
+                weather.temperature.setTemp(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.temp)));
+                weather.wind.setSpeed(cursor.getFloat(cursor.getColumnIndex(speed)));
+                weather.wind.setDeg(cursor.getFloat(cursor.getColumnIndex(DataBaseHelper.deg)));
+                weather.clouds.setPerc(cursor.getInt(cursor.getColumnIndex(DataBaseHelper.all)));
+                weather.setIconArray(cursor.getBlob(cursor.getColumnIndex(DataBaseHelper.sIconArray)));
             } else {
                 return null;
             }

@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Current Weather</string>
+    <string name="error_network">Невозможно обновить погоду. Убедитесь, что подключен Интернет и повторите попытку.</string>
+    <string name="add_city_text">Введите название города</string>
+    <string name="add_city_title">Добавление нового города</string>
+    <string name="add">Добавить</string>
 
     <array name="city">
         <item>Kazan</item>
@@ -8,4 +12,5 @@
         <item>Volgograd</item>
         <item>Vladivostok</item>
     </array>
+
 </resources>
