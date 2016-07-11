@@ -47,8 +47,7 @@ import java.util.List;
 public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
         View.OnClickListener {
 
-    RecyclerView recyclerView;
-    FloatingActionButton fab;
+    private RecyclerView mRecyclerView;
     private List<Weather> weatherList;
     private CityListAdapter cityListAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -62,22 +61,17 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         return new MainFragment();
     }
 
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         weatherList = new ArrayList<>();
         cityListAdapter = new CityListAdapter(getActivity(), weatherList);
-        recyclerView.addItemDecoration(new SimpleHorizontalDivider(getActivity()));
-        recyclerView.setAdapter(cityListAdapter);
+        mRecyclerView.addItemDecoration(new SimpleHorizontalDivider(getActivity()));
+        mRecyclerView.setAdapter(cityListAdapter);
         initSwipe();
         if (isConnect()) {
-            swipeRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    swipeRefreshLayout.setRefreshing(true);
-                    weatherForecast();
-                }
-            });
+            weatherForecast();
         } else {
             loadData();
         }
@@ -99,12 +93,12 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             weatherForecast();
         } else {
             Toast.makeText(getActivity(), R.string.error_network, Toast.LENGTH_SHORT).show();
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
     private void weatherForecast() {
         weatherList.clear();
-        swipeRefreshLayout.setRefreshing(true);
         MyApplication.getInstance().getDb().getAllCityAsync(new DataBaseHelper.DatabaseHand<List<Weather>>() {
             @Override
             public void onComplete(boolean success, final List<Weather> result) {
@@ -120,10 +114,10 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                             MyApplication.getInstance().setWeather(
                                                     JSONWeatherParser.getWeather(getActivity(),
                                                             jsonObject.toString(), cn.getCityID()));
-                                            //weatherList.add(MyApplication.getInstance().getWeather());
                                             saveData(MyApplication.getInstance().getWeather());
                                             cityListAdapter.addItem(MyApplication.getInstance()
                                                     .getWeather());
+                                            swipeRefreshLayout.setRefreshing(false);
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
@@ -139,7 +133,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 MyApplication.getInstance().getDb().close();
             }
         });
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     private void read() {
@@ -209,13 +202,15 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     public void init(View rootView) {
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.list);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list);
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(
                 new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         swipeRefreshLayout.setOnRefreshListener(this);
-        fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        swipeRefreshLayout.setColorSchemeResources(R.color.color_blue,R.color.color_green,
+                R.color.color_yellow,R.color.color_red);
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setOnClickListener(this);
     }
 
@@ -307,6 +302,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 }

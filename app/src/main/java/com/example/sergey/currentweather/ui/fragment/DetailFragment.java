@@ -35,12 +35,11 @@ public class DetailFragment extends Fragment {
                     @Override
                     public void onComplete(boolean success, Weather result) {
                         if (success) {
-                            if (result != null) {
+                            if (result != null && result.getIconArray() != null) {
                                 convertImage(result);
                                 setDataView(result);
                             }
                         }
-                        MyApplication.getInstance().getDb().close();
                     }
                 });
     }
@@ -115,6 +114,8 @@ public class DetailFragment extends Fragment {
 
     public void convertImage(final Weather result) {
         Bitmap bitmap = BitmapFactory.decodeByteArray(result.getIconArray(), 0, result.getIconArray().length);
-        weatherImage.setImageBitmap(bitmap);
+        if (bitmap != null) {
+            weatherImage.setImageBitmap(bitmap);
+        }
     }
 }

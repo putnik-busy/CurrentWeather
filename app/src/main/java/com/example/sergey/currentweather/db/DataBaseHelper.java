@@ -216,7 +216,7 @@ public class DataBaseHelper extends SQLiteOpenHelper implements DatabaseHandler 
                 new String[]{String.valueOf(weather.getCityID())});
     }
 
-    public synchronized void updateCityAsync(final Weather weather, DatabaseHand<Integer> handler) {
+    public void updateCityAsync(final Weather weather, DatabaseHand<Integer> handler) {
         new DatabaseAsyncTask<Integer>(handler) {
             @Override
             protected Integer executeMethod() {

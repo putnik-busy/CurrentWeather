@@ -72,6 +72,7 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
         args.putLong("position", pos);
         FragmentManager manager = ((AppCompatActivity) context).getSupportFragmentManager();
         FragmentTransaction ft = manager.beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         DetailFragment detailFragment = new DetailFragment();
         detailFragment.setArguments(args);
         ft.replace(R.id.container, detailFragment);
@@ -80,8 +81,10 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
     }
 
     public void addItem(Weather weather) {
-        data.add(weather);
-        notifyItemInserted(getItemCount());
+        this.data.add(weather);
+      //  final int size = this.data.size();
+      //  notifyItemInserted(size);
+        notifyDataSetChanged();
     }
 
     public void addAll(List<Weather> items) {
@@ -90,11 +93,11 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
         notifyItemRangeInserted(size, items.size());
     }
 
-
     public Weather removeItem(int position) {
+        final int size = this.data.size();
         Weather weather = data.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, data.size());
+        notifyItemRangeChanged(position, size);
         return weather;
     }
 }

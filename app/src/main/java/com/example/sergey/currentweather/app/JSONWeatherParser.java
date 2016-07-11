@@ -23,7 +23,8 @@ public class JSONWeatherParser {
 
     private static RequestQueue requestQueue;
 
-    public static Weather getWeather(FragmentActivity activity, String data, long cityID) throws JSONException {
+    public static Weather getWeather(FragmentActivity activity, String data, long cityID)
+            throws JSONException {
         Weather weather = new Weather();
         JSONObject jObj = new JSONObject(data);
         requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
