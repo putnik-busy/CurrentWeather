@@ -1,7 +1,7 @@
 package com.example.sergey.currentweather.app;
 
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.android.volley.RequestQueue;
@@ -23,44 +23,46 @@ public class JSONWeatherParser {
 
     private static RequestQueue requestQueue;
 
-    public static Weather getWeather(FragmentActivity activity, String data, long cityID)
+    public static Weather getWeather(Context context, String data, long cityID)
             throws JSONException {
         Weather weather = new Weather();
-        JSONObject jObj = new JSONObject(data);
-        requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
+        if (context!=null) {
+            JSONObject jObj = new JSONObject(data);
+            requestQueue = Volley.newRequestQueue(context);
 
-        JSONObject coordObj = getObject("coord", jObj);
-        weather.location.setLatitude(getFloat("lat", coordObj));
-        weather.location.setLongitude(getFloat("lon", coordObj));
+            JSONObject coordObj = getObject("coord", jObj);
+            weather.location.setLatitude(getFloat("lat", coordObj));
+            weather.location.setLongitude(getFloat("lon", coordObj));
 
-        JSONObject sysObj = getObject("sys", jObj);
-        weather.location.setCountry(getString("country", sysObj));
-        weather.location.setSunrise(getInt("sunrise", sysObj));
-        weather.location.setSunset(getInt("sunset", sysObj));
-        weather.location.setCity(getString("name", jObj));
+            JSONObject sysObj = getObject("sys", jObj);
+            weather.location.setCountry(getString("country", sysObj));
+            weather.location.setSunrise(getInt("sunrise", sysObj));
+            weather.location.setSunset(getInt("sunset", sysObj));
+            weather.location.setCity(getString("name", jObj));
 
-        JSONArray jArr = jObj.getJSONArray("weather");
-        JSONObject JSONWeather = jArr.getJSONObject(0);
-        weather.currentCondition.setWeatherId(getInt("id", JSONWeather));
-        weather.currentCondition.setDescr(getString("description", JSONWeather));
-        weather.currentCondition.setCondition(getString("main", JSONWeather));
-        weather.currentCondition.setIcon(getString("icon", JSONWeather));
+            JSONArray jArr = jObj.getJSONArray("weather");
+            JSONObject JSONWeather = jArr.getJSONObject(0);
+            weather.currentCondition.setWeatherId(getInt("id", JSONWeather));
+            weather.currentCondition.setDescr(getString("description", JSONWeather));
+            weather.currentCondition.setCondition(getString("main", JSONWeather));
+            weather.currentCondition.setIcon(getString("icon", JSONWeather));
 
-        JSONObject mainObj = getObject("main", jObj);
-        weather.currentCondition.setHumidity(getInt("humidity", mainObj));
-        weather.currentCondition.setPressure(getInt("pressure", mainObj));
-        weather.temperature.setMaxTemp(getFloat("temp_max", mainObj));
-        weather.temperature.setMinTemp(getFloat("temp_min", mainObj));
-        weather.temperature.setTemp(getFloat("temp", mainObj));
+            JSONObject mainObj = getObject("main", jObj);
+            weather.currentCondition.setHumidity(getInt("humidity", mainObj));
+            weather.currentCondition.setPressure(getInt("pressure", mainObj));
+            weather.temperature.setMaxTemp(getFloat("temp_max", mainObj));
+            weather.temperature.setMinTemp(getFloat("temp_min", mainObj));
+            weather.temperature.setTemp(getFloat("temp", mainObj));
 
-        JSONObject wObj = getObject("wind", jObj);
-        weather.wind.setSpeed(getFloat("speed", wObj));
-        weather.wind.setDeg(getFloat("deg", wObj));
+            JSONObject wObj = getObject("wind", jObj);
+            weather.wind.setSpeed(getFloat("speed", wObj));
+            weather.wind.setDeg(getFloat("deg", wObj));
 
-        JSONObject cObj = getObject("clouds", jObj);
-        weather.clouds.setPerc(getInt("all", cObj));
-        weather.setCityID(cityID);
-        getImage(weather);
+            JSONObject cObj = getObject("clouds", jObj);
+            weather.clouds.setPerc(getInt("all", cObj));
+            weather.setCityID(cityID);
+            getImage(weather);
+        }
         return weather;
     }
 

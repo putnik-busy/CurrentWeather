@@ -20,10 +20,18 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private MainFragment mMainFragment;
+    public static final String KEY_INDEX = "index";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_container);
+        if (savedInstanceState != null) {
+            MyApplication.getInstance().setmSaveInDatabase(
+                    savedInstanceState.getBoolean(KEY_INDEX));
+        }
         recordListCity();
     }
 
@@ -31,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(R.id.container, fragment).commit();
+        transaction.replace(R.id.container, fragment).commit();
     }
 
     public void recordListCity() {
@@ -40,7 +48,11 @@ public class MainActivity extends AppCompatActivity {
             saveData();
         } else {
             read();
-            initFragment(MainFragment.newInstance());
+            //FragmentManager fragmentManager = getSupportFragmentManager();
+            //mMainFragment = (MainFragment) fragmentManager.findFragmentById(R.id.container);
+            //if (mMainFragment == null) {
+                initFragment(MainFragment.newInstance());
+          //  }
         }
     }
 
@@ -102,5 +114,11 @@ public class MainActivity extends AppCompatActivity {
                 MyApplication.getInstance().getDb().close();
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_INDEX, MyApplication.getInstance().ismSaveInDatabase());
     }
 }

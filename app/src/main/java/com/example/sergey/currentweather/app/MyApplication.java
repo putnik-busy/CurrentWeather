@@ -16,6 +16,7 @@ public class MyApplication extends Application {
     private Weather weather;
     private DataBaseHelper db;
     private String cityAdd;
+    private boolean mSaveInDatabase;
 
     private RequestQueue mRequestQueue;
     private static MyApplication mInstance;
@@ -26,6 +27,7 @@ public class MyApplication extends Application {
         mInstance = this;
         db = new DataBaseHelper(this);
         weather = new Weather();
+        mSaveInDatabase = false;
     }
 
     public synchronized static MyApplication getInstance() {
@@ -73,5 +75,13 @@ public class MyApplication extends Application {
 
     public void setCityAdd(String cityAdd) {
         this.cityAdd = cityAdd;
+    }
+
+    public boolean ismSaveInDatabase() {
+        return mSaveInDatabase;
+    }
+
+    public void setmSaveInDatabase(boolean mSaveInDatabase) {
+        this.mSaveInDatabase = mSaveInDatabase;
     }
 }

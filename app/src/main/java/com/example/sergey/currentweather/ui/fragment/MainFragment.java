@@ -1,6 +1,7 @@
 package com.example.sergey.currentweather.ui.fragment;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -47,20 +48,20 @@ import java.util.List;
 public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
         View.OnClickListener {
 
-    private RecyclerView mRecyclerView;
-    private List<Weather> weatherList;
-    private CityListAdapter cityListAdapter;
-    SwipeRefreshLayout swipeRefreshLayout;
     final String CITY_TEMP_URL = "http://api.openweathermap.org/data/2.5/weather?q=";
     final String API_KEY = "&appid=9b4c3bc3f65172d10f361ec0e1e1f2e4";
     final String METRIC = "&units=metric";
     final String LANG = "&lang=ru";
+    SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView mRecyclerView;
+    private List<Weather> weatherList;
+    private CityListAdapter cityListAdapter;
     private Paint p = new Paint();
+    private ProgressDialog mProgressDialog;
 
     public static MainFragment newInstance() {
         return new MainFragment();
     }
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -70,11 +71,20 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mRecyclerView.addItemDecoration(new SimpleHorizontalDivider(getActivity()));
         mRecyclerView.setAdapter(cityListAdapter);
         initSwipe();
-        if (isConnect()) {
+        setupDialog();
+
+        if (isConnect() && !MyApplication.getInstance().ismSaveInDatabase()) {
             weatherForecast();
         } else {
             loadData();
         }
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // FIXME: 28.07.2016
+        //setRetainInstance(true);
     }
 
     @Override
@@ -98,41 +108,44 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void weatherForecast() {
+        mProgressDialog.show();
         weatherList.clear();
-        MyApplication.getInstance().getDb().getAllCityAsync(new DataBaseHelper.DatabaseHand<List<Weather>>() {
-            @Override
-            public void onComplete(boolean success, final List<Weather> result) {
-                if (success) {
-                    for (final Weather cn : result) {
-                        String url = CITY_TEMP_URL + cn.location.getCity() + LANG + METRIC +
-                                API_KEY;
-                        JsonObjectRequest request = new JsonObjectRequest(url, null,
-                                new Response.Listener<JSONObject>() {
+        MyApplication.getInstance().getDb().getAllCityAsync(
+                new DataBaseHelper.DatabaseHand<List<Weather>>() {
+                    @Override
+                    public void onComplete(boolean success, final List<Weather> result) {
+                        if (success) {
+                            for (final Weather cn : result) {
+                                String url = CITY_TEMP_URL + cn.location.getCity() + LANG + METRIC +
+                                        API_KEY;
+                                JsonObjectRequest request = new JsonObjectRequest(url, null,
+                                        new Response.Listener<JSONObject>() {
+                                            @Override
+                                            public void onResponse(JSONObject jsonObject) {
+                                                try {
+                                                    MyApplication.getInstance().setWeather(
+                                                            JSONWeatherParser.getWeather(getContext(),
+                                                                    jsonObject.toString(), cn.getCityID()));
+                                                    saveData(MyApplication.getInstance().getWeather());
+                                                    cityListAdapter.addItem(MyApplication.getInstance()
+                                                            .getWeather());
+                                                    swipeRefreshLayout.setRefreshing(false);
+                                                    mProgressDialog.dismiss();
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }, new Response.ErrorListener() {
                                     @Override
-                                    public void onResponse(JSONObject jsonObject) {
-                                        try {
-                                            MyApplication.getInstance().setWeather(
-                                                    JSONWeatherParser.getWeather(getActivity(),
-                                                            jsonObject.toString(), cn.getCityID()));
-                                            saveData(MyApplication.getInstance().getWeather());
-                                            cityListAdapter.addItem(MyApplication.getInstance()
-                                                    .getWeather());
-                                            swipeRefreshLayout.setRefreshing(false);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
+                                    public void onErrorResponse(VolleyError volleyError) {
                                     }
-                                }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError volleyError) {
+                                });
+                                MyApplication.getInstance().addToRequestQueue(request);
                             }
-                        });
-                        MyApplication.getInstance().addToRequestQueue(request);
+                        }
+                        MyApplication.getInstance().getDb().close();
                     }
-                }
-                MyApplication.getInstance().getDb().close();
-            }
-        });
+                });
     }
 
     private void read() {
@@ -170,15 +183,16 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void loadData() {
-        MyApplication.getInstance().getDb().getAllCityAsync(new DataBaseHelper.DatabaseHand<List<Weather>>() {
-            @Override
-            public void onComplete(boolean success, List<Weather> result) {
-                if (success) {
-                    cityListAdapter.addAll(result);
-                }
-                MyApplication.getInstance().getDb().close();
-            }
-        });
+        MyApplication.getInstance().getDb().getAllCityAsync(
+                new DataBaseHelper.DatabaseHand<List<Weather>>() {
+                    @Override
+                    public void onComplete(boolean success, List<Weather> result) {
+                        if (success) {
+                            cityListAdapter.addAll(result);
+                        }
+                        MyApplication.getInstance().getDb().close();
+                    }
+                });
     }
 
     public synchronized void saveData(Weather weather) {
@@ -186,6 +200,9 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 new DataBaseHelper.DatabaseHand<Integer>() {
                     @Override
                     public void onComplete(boolean success, Integer result) {
+                        if (success) {
+                            MyApplication.getInstance().setmSaveInDatabase(true);
+                        }
                     }
                 });
         read();
@@ -208,8 +225,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mRecyclerView.setLayoutManager(
                 new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeResources(R.color.color_blue,R.color.color_green,
-                R.color.color_yellow,R.color.color_red);
+        swipeRefreshLayout.setColorSchemeResources(R.color.color_blue, R.color.color_green,
+                R.color.color_yellow, R.color.color_red);
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setOnClickListener(this);
     }
@@ -303,5 +320,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
+    private void setupDialog() {
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage("Загрузка данных...");
     }
 }
