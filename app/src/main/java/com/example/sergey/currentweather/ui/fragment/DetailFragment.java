@@ -98,7 +98,7 @@ public class DetailFragment extends Fragment {
     public String convertTime(long time) {
         long javaTimestamp = time * 1000L;
         Date date = new Date(javaTimestamp);
-        return new SimpleDateFormat("hh:mm", Locale.ENGLISH).format(date);
+        return new SimpleDateFormat("HH:mm", Locale.ENGLISH).format(date);
     }
 
     private int getResource(float temp) {

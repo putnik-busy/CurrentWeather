@@ -20,7 +20,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MainFragment mMainFragment;
     public static final String KEY_INDEX = "index";
 
 
@@ -48,11 +47,7 @@ public class MainActivity extends AppCompatActivity {
             saveData();
         } else {
             read();
-            //FragmentManager fragmentManager = getSupportFragmentManager();
-            //mMainFragment = (MainFragment) fragmentManager.findFragmentById(R.id.container);
-            //if (mMainFragment == null) {
                 initFragment(MainFragment.newInstance());
-          //  }
         }
     }
 

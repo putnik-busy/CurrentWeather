@@ -4,6 +4,7 @@
     <string name="add_city_text">Введите название города</string>
     <string name="add_city_title">Добавление нового города</string>
     <string name="add">Добавить</string>
+    <string name="message_dialog">Загрузка данных…</string>
 
     <array name="city">
         <item>Kazan</item>

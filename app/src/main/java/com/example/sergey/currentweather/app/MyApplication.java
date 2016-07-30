@@ -11,8 +11,7 @@ import com.example.sergey.currentweather.model.Weather;
 
 public class MyApplication extends Application {
 
-    public static final String TAG = MyApplication.class
-            .getSimpleName();
+    public static String TAG = MyApplication.class.getSimpleName();
     private Weather weather;
     private DataBaseHelper db;
     private String cityAdd;

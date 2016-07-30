@@ -52,7 +52,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     final String API_KEY = "&appid=9b4c3bc3f65172d10f361ec0e1e1f2e4";
     final String METRIC = "&units=metric";
     final String LANG = "&lang=ru";
-    SwipeRefreshLayout swipeRefreshLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private List<Weather> weatherList;
     private CityListAdapter cityListAdapter;
@@ -81,13 +81,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // FIXME: 28.07.2016
-        //setRetainInstance(true);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -102,7 +95,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             swipeRefreshLayout.setRefreshing(true);
             weatherForecast();
         } else {
-            Toast.makeText(getActivity(), R.string.error_network, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(),
+                    R.string.error_network, Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         }
     }
@@ -110,42 +104,16 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private void weatherForecast() {
         mProgressDialog.show();
         weatherList.clear();
-        MyApplication.getInstance().getDb().getAllCityAsync(
-                new DataBaseHelper.DatabaseHand<List<Weather>>() {
-                    @Override
-                    public void onComplete(boolean success, final List<Weather> result) {
-                        if (success) {
-                            for (final Weather cn : result) {
-                                String url = CITY_TEMP_URL + cn.location.getCity() + LANG + METRIC +
-                                        API_KEY;
-                                JsonObjectRequest request = new JsonObjectRequest(url, null,
-                                        new Response.Listener<JSONObject>() {
-                                            @Override
-                                            public void onResponse(JSONObject jsonObject) {
-                                                try {
-                                                    MyApplication.getInstance().setWeather(
-                                                            JSONWeatherParser.getWeather(getContext(),
-                                                                    jsonObject.toString(), cn.getCityID()));
-                                                    saveData(MyApplication.getInstance().getWeather());
-                                                    cityListAdapter.addItem(MyApplication.getInstance()
-                                                            .getWeather());
-                                                    swipeRefreshLayout.setRefreshing(false);
-                                                    mProgressDialog.dismiss();
-                                                } catch (JSONException e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        }, new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError volleyError) {
-                                    }
-                                });
-                                MyApplication.getInstance().addToRequestQueue(request);
-                            }
-                        }
-                        MyApplication.getInstance().getDb().close();
-                    }
-                });
+        MyApplication.getInstance().getDb().getAllCityAsync(new DataBaseHelper
+                .DatabaseHand<List<Weather>>() {
+            @Override
+            public void onComplete(boolean success, final List<Weather> result) {
+                if (success) {
+                    startRequest(result);
+                }
+                MyApplication.getInstance().getDb().close();
+            }
+        });
     }
 
     private void read() {
@@ -325,6 +293,45 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private void setupDialog() {
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setCancelable(false);
-        mProgressDialog.setMessage("Загрузка данных...");
+        mProgressDialog.setMessage(getContext().getResources().getString(R.string.message_dialog));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        MyApplication.getInstance().cancelPendingRequests("GET");
+    }
+
+    public void parseResponse(JSONObject jsonObject, Weather cn) {
+        try {
+            MyApplication.getInstance().setWeather(JSONWeatherParser
+                    .getWeather(getContext(), jsonObject.toString(), cn.getCityID()));
+            saveData(MyApplication.getInstance().getWeather());
+            cityListAdapter.addItem(MyApplication.getInstance().getWeather());
+            swipeRefreshLayout.setRefreshing(false);
+            mProgressDialog.dismiss();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void startRequest(List<Weather> result) {
+        for (final Weather cn : result) {
+            String url = CITY_TEMP_URL + cn.location.getCity() + LANG + METRIC + API_KEY;
+            JsonObjectRequest request = new JsonObjectRequest(url, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject jsonObject) {
+                            parseResponse(jsonObject, cn);
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    volleyError.printStackTrace();
+                }
+            });
+            MyApplication.TAG = "GET";
+            MyApplication.getInstance().addToRequestQueue(request);
+        }
     }
 }
