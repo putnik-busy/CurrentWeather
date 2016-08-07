@@ -7,10 +7,11 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/location"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"/>
 
     <RelativeLayout
         android:id="@+id/tempLyt"
@@ -19,31 +20,33 @@
         android:layout_below="@id/location"
         android:layout_centerHorizontal="true">
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/temp"
             style="@style/textBig"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/lineTxt"
             android:layout_width="wrap_content"
             android:layout_height="3dp"
             android:layout_alignLeft="@id/temp"
             android:layout_alignRight="@id/temp"
             android:layout_below="@id/temp"
-            android:layout_marginTop="0dp"/>
+            android:layout_marginTop="0dp"
+            android:textColor="@android:color/black" />
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/imgWeather"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignTop="@id/temp"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/temp"
+            android:contentDescription="@string/img_weather"
             tools:ignore="RtlHardcoded" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/tempUnit"
             style="@style/textSmall"
             android:layout_width="wrap_content"
@@ -53,7 +56,7 @@
             android:layout_toRightOf="@id/temp"
             tools:ignore="RtlHardcoded" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/descrWeather"
             style="@style/textSmall"
             android:layout_width="wrap_content"
@@ -65,134 +68,153 @@
 
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/tempIcon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_below="@id/tempLyt"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/temperature" />
-
-    <TextView
-        android:id="@+id/tempMin"
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/tempIcon"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="12dp"
-        android:layout_toRightOf="@id/tempIcon"
-        tools:ignore="RtlHardcoded" />
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/location">
 
-    <TextView
-        android:id="@+id/tempMax"
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/tempIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/temp_icon"
+            android:src="@drawable/temperature" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tempMin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tempIcon"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@id/tempIcon"
+            android:textColor="@android:color/black" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tempMax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/tempMin"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/tempMin"
+            android:textColor="@android:color/black" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/windIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_below="@id/tempIcon"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/wind_icon"
+            android:src="@drawable/wind" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/windSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tempMin"
+            android:layout_alignTop="@id/windIcon"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@id/windIcon"
+            android:textColor="@android:color/black" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/windDeg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/windSpeed"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/windSpeed"
+            android:textColor="@android:color/black" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/humidityIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_below="@id/windIcon"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/humidity_icon"
+            android:src="@drawable/humidity" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tempMin"
+            android:layout_alignTop="@id/humidityIcon"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@id/humidityIcon"
+            android:textColor="@android:color/black" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/tempMin"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@id/tempMin"
-        tools:ignore="RtlHardcoded" />
+        android:layout_alignTop="@+id/relativeLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_toEndOf="@+id/tempLyt"
+        android:layout_toRightOf="@+id/tempLyt">
 
-    <ImageView
-        android:id="@+id/windIcon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_below="@id/tempIcon"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/wind" />
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/pressureIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/pressure_icon"
+            android:src="@drawable/pressure" />
 
-    <TextView
-        android:id="@+id/windSpeed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/tempMin"
-        android:layout_alignTop="@id/windIcon"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="12dp"
-        android:layout_toRightOf="@id/windIcon"
-        tools:ignore="RtlHardcoded" />
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/pressure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/pressureIcon"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@id/pressureIcon"
+            android:textColor="@android:color/black" />
 
-    <TextView
-        android:id="@+id/windDeg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/windSpeed"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@id/windSpeed"
-        tools:ignore="RtlHardcoded" />
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/sunIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_below="@id/pressureIcon"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/sun_icon"
+            android:src="@drawable/sun" />
 
-    <ImageView
-        android:id="@+id/humidityIcon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_below="@id/windIcon"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/humidity" />
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/sunrise"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/sunIcon"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@id/sunIcon"
+            android:textColor="@android:color/black" />
 
-    <TextView
-        android:id="@+id/humidity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/tempMin"
-        android:layout_alignTop="@id/humidityIcon"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="12dp"
-        android:layout_toRightOf="@id/humidityIcon"
-        tools:ignore="RtlHardcoded" />
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/moonIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_below="@id/sunIcon"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/moon_icon"
+            android:src="@drawable/moon" />
 
-    <ImageView
-        android:id="@+id/pressureIcon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_below="@id/humidityIcon"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/pressure" />
-
-    <TextView
-        android:id="@+id/pressure"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/tempMin"
-        android:layout_alignTop="@id/pressureIcon"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="12dp"
-        android:layout_toRightOf="@id/pressureIcon"
-        tools:ignore="RtlHardcoded" />
-
-    <ImageView
-        android:id="@+id/sunIcon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_below="@id/pressureIcon"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/sun" />
-
-    <TextView
-        android:id="@+id/sunrise"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/tempMin"
-        android:layout_alignTop="@id/sunIcon"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="12dp"
-        android:layout_toRightOf="@id/sunIcon"
-        tools:ignore="RtlHardcoded" />
-
-    <ImageView
-        android:id="@+id/moonIcon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_below="@id/sunIcon"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/moon" />
-
-    <TextView
-        android:id="@+id/sunset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/tempMin"
-        android:layout_alignTop="@id/moonIcon"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="12dp"
-        android:layout_toRightOf="@id/moonIcon"
-        tools:ignore="RtlHardcoded" />
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/sunset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/moonIcon"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@id/moonIcon"
+            tools:ignore="RtlHardcoded" />
+    </RelativeLayout>
 </RelativeLayout>

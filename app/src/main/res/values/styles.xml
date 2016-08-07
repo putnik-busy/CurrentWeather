@@ -8,6 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="StyledDialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/color_blue_second</item>
+    </style>
+
     <style name="textBig" parent="@android:style/TextAppearance.Large">
         <item name="android:textSize">82sp</item>
         <item name="android:textColor">@color/color_black</item>

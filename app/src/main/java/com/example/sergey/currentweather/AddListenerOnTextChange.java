@@ -8,7 +8,7 @@ import android.view.View;
 import com.example.sergey.currentweather.app.MyApplication;
 
 public class AddListenerOnTextChange implements TextWatcher {
-    View view;
+    private View view;
 
     public AddListenerOnTextChange(View view) {
         this.view = view;

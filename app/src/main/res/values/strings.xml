@@ -1,10 +1,23 @@
 <resources>
     <string name="app_name">Current Weather</string>
-    <string name="error_network">Невозможно обновить погоду. Убедитесь, что подключен Интернет и повторите попытку.</string>
+    <string name="error_network">Невозможно обновить погоду. Убедитесь, что подключен Интернет
+        и повторите попытку.</string>
+    <string name="timeout_network">Истек период ожидания ответа сервера. Повторите попытку
+        позже</string>
     <string name="add_city_text">Введите название города</string>
+    <string name="error_city_add">Некорректно введен город</string>
     <string name="add_city_title">Добавление нового города</string>
     <string name="add">Добавить</string>
+    <string name="cancel">Отмена</string>
     <string name="message_dialog">Загрузка данных…</string>
+    <string name="error_dialog">Вы не можете добавить пустое значение</string>
+    <string name="img_weather">img_Weather</string>
+    <string name="temp_icon">temp_Icon</string>
+    <string name="wind_icon">wind_Icon</string>
+    <string name="humidity_icon">humidity_Icon</string>
+    <string name="pressure_icon">pressure_Icon</string>
+    <string name="sun_icon">sun_Icon</string>
+    <string name="moon_icon">moon_Icon</string>
 
     <array name="city">
         <item>Kazan</item>

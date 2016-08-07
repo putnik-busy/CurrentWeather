@@ -13,7 +13,9 @@ import android.graphics.RectF;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -26,10 +28,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.sergey.currentweather.R;
+import com.example.sergey.currentweather.TextUtils;
 import com.example.sergey.currentweather.app.JSONWeatherParser;
 import com.example.sergey.currentweather.app.MyApplication;
 import com.example.sergey.currentweather.app.SimpleHorizontalDivider;
@@ -54,6 +61,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     final String LANG = "&lang=ru";
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView mRecyclerView;
+    private CoordinatorLayout mCoordinatorLayout;
     private List<Weather> weatherList;
     private CityListAdapter cityListAdapter;
     private Paint p = new Paint();
@@ -95,8 +103,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             swipeRefreshLayout.setRefreshing(true);
             weatherForecast();
         } else {
-            Toast.makeText(getActivity(),
-                    R.string.error_network, Toast.LENGTH_SHORT).show();
+            showMessage(R.string.error_network);
             swipeRefreshLayout.setRefreshing(false);
         }
     }
@@ -187,6 +194,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     public void init(View rootView) {
+        mCoordinatorLayout = (CoordinatorLayout) rootView
+                .findViewById(R.id.coordinationLayout);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list);
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout);
         mRecyclerView.setHasFixedSize(true);
@@ -217,23 +226,42 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     public void inputDialog() {
         MaterialSimpleDialog.show("add_city", (AppCompatActivity) getActivity(),
-                R.string.add_city_title, R.string.add, new DialogInterface.OnClickListener() {
+                R.string.add_city_title, R.string.add, R.string.cancel,
+                new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Weather weather = new Weather();
-                        weather.setNameCity(MyApplication.getInstance().getCityAdd());
-                        saveNewCity(weather, dialog);
+                        switch (which) {
+                            case -1:
+                                dialog.dismiss();
+                                if (TextUtils.IsEmptyOrNull(MyApplication.getInstance()
+                                        .getCityAdd())) {
+                                    if (isConnect()) {
+                                        Weather weather = new Weather();
+                                        weather.setNameCity(MyApplication.getInstance()
+                                                .getCityAdd());
+                                        saveNewCity(weather);
+                                    } else {
+                                        showMessage(R.string.error_network);
+                                    }
+                                } else {
+                                    Toast.makeText(getContext(), R.string.error_dialog,
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                                break;
+                            case -2:
+                                dialog.dismiss();
+                        }
                     }
-                });
+                }
+        );
     }
 
-    public void saveNewCity(final Weather weather, final DialogInterface dialog) {
+    public void saveNewCity(final Weather weather) {
         MyApplication.getInstance().getDb().addCityAsync(weather,
                 new DataBaseHelper.DatabaseHand<Void>() {
                     @Override
                     public void onComplete(boolean success, Void result) {
                         if (success) {
-                            dialog.dismiss();
                             weatherForecast();
                         }
                     }
@@ -304,12 +332,16 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     public void parseResponse(JSONObject jsonObject, Weather cn) {
         try {
-            MyApplication.getInstance().setWeather(JSONWeatherParser
-                    .getWeather(getContext(), jsonObject.toString(), cn.getCityID()));
-            saveData(MyApplication.getInstance().getWeather());
-            cityListAdapter.addItem(MyApplication.getInstance().getWeather());
-            swipeRefreshLayout.setRefreshing(false);
             mProgressDialog.dismiss();
+            swipeRefreshLayout.setRefreshing(false);
+            if (jsonObject.toString().contains("Not found city")) {
+                showMessage(R.string.error_city_add);
+            } else {
+                MyApplication.getInstance().setWeather(JSONWeatherParser
+                        .getWeather(getContext(), jsonObject.toString(), cn.getCityID()));
+                saveData(MyApplication.getInstance().getWeather());
+            }
+            cityListAdapter.addItem(MyApplication.getInstance().getWeather());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -327,11 +359,30 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
-                    volleyError.printStackTrace();
+                    mProgressDialog.dismiss();
+                    swipeRefreshLayout.setRefreshing(false);
+                    MyApplication.getInstance().cancelPendingRequests("GET");
+                    if (volleyError instanceof NoConnectionError) {
+                        showMessage(R.string.error_network);
+                    } else if (volleyError instanceof TimeoutError) {
+                        showMessage(R.string.timeout_network);
+                    }
                 }
             });
             MyApplication.TAG = "GET";
+            request.setRetryPolicy(timeOutRequest());
             MyApplication.getInstance().addToRequestQueue(request);
         }
+    }
+
+    public RetryPolicy timeOutRequest() {
+        return new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+    }
+
+    public void showMessage(int resId) {
+        Snackbar snackbar = Snackbar.make(mCoordinatorLayout, resId,
+                Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 }
