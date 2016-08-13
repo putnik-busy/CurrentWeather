@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.sergey.currentweather.ui.activity;
 
 import android.database.Cursor;
@@ -7,28 +23,22 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.example.sergey.currentweather.R;
 import com.example.sergey.currentweather.app.MyApplication;
 import com.example.sergey.currentweather.db.DataBaseHelper;
-import com.example.sergey.currentweather.model.Weather;
 import com.example.sergey.currentweather.ui.fragment.MainFragment;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String KEY_INDEX = "index";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_container);
         if (savedInstanceState != null) {
-            MyApplication.getInstance().setmSaveInDatabase(
+            MyApplication.getInstance().setSaveInDatabase(
                     savedInstanceState.getBoolean(KEY_INDEX));
         }
         recordListCity();
@@ -41,13 +51,15 @@ public class MainActivity extends AppCompatActivity {
         transaction.replace(R.id.container, fragment).commit();
     }
 
+    /**
+     * check city from database, save if false
+     */
     public void recordListCity() {
         SQLiteDatabase db = MyApplication.getInstance().getDb().getReadableDatabase();
         if (!doesTableExist(db, "City")) {
             saveData();
         } else {
-            read();
-                initFragment(MainFragment.newInstance());
+            initFragment(MainFragment.newInstance());
         }
     }
 
@@ -64,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
         return count > 0;
     }
 
+    /**
+     * save city in db
+     */
+
     public void saveData() {
         String[] citiesNames = getResources().getStringArray(R.array.city);
         MyApplication.getInstance().getDb().addListCityAsync(citiesNames, new DataBaseHelper.DatabaseHand<Void>() {
@@ -71,42 +87,7 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(boolean success, Void result) {
                 if (success) {
                     initFragment(MainFragment.newInstance());
-                    read();
                 }
-            }
-        });
-    }
-
-    private void read() {
-        MyApplication.getInstance().getDb().getAllCityAsync(new DataBaseHelper.DatabaseHand<List<Weather>>() {
-            @Override
-            public void onComplete(boolean success, List<Weather> result) {
-                if (success) {
-                    for (Weather cn : result) {
-                        String log =
-                                "Id: " + cn.getCityID() + "\n" +
-                                        " , name_city: " + cn.location.getCity() + "\n" +
-                                        " , lon: " + cn.location.getLongitude() + "\n" +
-                                        " , lat: " + cn.location.getLatitude() + "\n" +
-                                        " , country: " + cn.location.getCountry() + "\n" +
-                                        " , sunrise: " + cn.location.getSunrise() + "\n" +
-                                        " , sunset: " + cn.location.getSunset() + "\n" +
-                                        " , weather_id: " + cn.currentCondition.getWeatherId() + "\n" +
-                                        " , description: " + cn.currentCondition.getDescr() + "\n" +
-                                        " , main: " + cn.currentCondition.getCondition() + "\n" +
-                                        " , icon: " + cn.currentCondition.getIcon() + "\n" +
-                                        " , humidity: " + cn.currentCondition.getHumidity() + "\n" +
-                                        " , pressure: " + cn.currentCondition.getPressure() + "\n" +
-                                        " , temp_max: " + cn.temperature.getMaxTemp() + "\n" +
-                                        " , temp_min: " + cn.temperature.getMinTemp() + "\n" +
-                                        " , speed: " + cn.wind.getSpeed() + "\n" +
-                                        " , deg: " + cn.wind.getDeg() + "\n" +
-                                        " , all: " + cn.clouds.getPerc() + "\n" +
-                                        " , icon_array: " + Arrays.toString(cn.getIconArray()) + "\n";
-                        Log.d("TAG", log);
-                    }
-                }
-                MyApplication.getInstance().getDb().close();
             }
         });
     }
@@ -114,6 +95,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_INDEX, MyApplication.getInstance().ismSaveInDatabase());
+        outState.putBoolean(KEY_INDEX, MyApplication.getInstance().isSaveInDatabase());
     }
 }

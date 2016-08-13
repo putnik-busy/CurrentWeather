@@ -1,8 +1,23 @@
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.sergey.currentweather.app;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -16,19 +31,28 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-import java.util.List;
 
+
+/**
+ * Parse String json data from openWeather
+ */
 public class JSONWeatherParser {
 
-    private static RequestQueue requestQueue;
+    private static RequestQueue sRequestQueue;
 
+    /**
+     * @param context use to newRequestQueue
+     * @param data    include json city
+     * @param cityID  id get city
+     * @throws JSONException
+     * @returnobject Weather model with data about weather
+     */
     public static Weather getWeather(Context context, String data, long cityID)
             throws JSONException {
         Weather weather = new Weather();
-        if (context!=null) {
+        if (context != null) {
             JSONObject jObj = new JSONObject(data);
-            requestQueue = Volley.newRequestQueue(context);
+            sRequestQueue = Volley.newRequestQueue(context);
 
             JSONObject coordObj = getObject("coord", jObj);
             weather.location.setLatitude(getFloat("lat", coordObj));
@@ -89,11 +113,16 @@ public class JSONWeatherParser {
         return jObj.getInt(tagName);
     }
 
+    /**
+     * get icon weather
+     *
+     * @param result include Weather model city
+     */
     public static void getImage(final Weather result) {
-        if (result!= null) {
+        if (result != null) {
             IWeatherImageProvider provider = new WeatherImageProvider();
             provider.getImage(result.currentCondition.getIcon(),
-                    requestQueue, new IWeatherImageProvider.WeatherImageListener() {
+                    sRequestQueue, new IWeatherImageProvider.WeatherImageListener() {
                         @Override
                         public void onImageReady(Bitmap image) {
                             updateDatabase(convertBitmapIntoByteArray(result, image));
@@ -102,14 +131,16 @@ public class JSONWeatherParser {
         }
     }
 
+    /**
+     * update database
+     *
+     * @param weather save in db
+     */
     private static void updateDatabase(Weather weather) {
         MyApplication.getInstance().getDb().updateCityAsync(
                 weather, new DataBaseHelper.DatabaseHand<Integer>() {
                     @Override
                     public void onComplete(boolean success, Integer result) {
-                        if (success) {
-                            read();
-                        }
                     }
                 });
     }
@@ -120,39 +151,5 @@ public class JSONWeatherParser {
         byte[] byteArray = stream.toByteArray();
         result.setIconArray(byteArray);
         return result;
-    }
-
-    private static void read() {
-        MyApplication.getInstance().getDb().getAllCityAsync(new DataBaseHelper.DatabaseHand<List<Weather>>() {
-            @Override
-            public void onComplete(boolean success, List<Weather> result) {
-                if (success) {
-                    for (Weather cn : result) {
-                        String log =
-                                "Id: " + cn.getCityID() + "\n" +
-                                        " , name_city: " + cn.location.getCity() + "\n" +
-                                        " , lon: " + cn.location.getLongitude() + "\n" +
-                                        " , lat: " + cn.location.getLatitude() + "\n" +
-                                        " , country: " + cn.location.getCountry() + "\n" +
-                                        " , sunrise: " + cn.location.getSunrise() + "\n" +
-                                        " , sunset: " + cn.location.getSunset() + "\n" +
-                                        " , weather_id: " + cn.currentCondition.getWeatherId() + "\n" +
-                                        " , description: " + cn.currentCondition.getDescr() + "\n" +
-                                        " , main: " + cn.currentCondition.getCondition() + "\n" +
-                                        " , icon: " + cn.currentCondition.getIcon() + "\n" +
-                                        " , humidity: " + cn.currentCondition.getHumidity() + "\n" +
-                                        " , pressure: " + cn.currentCondition.getPressure() + "\n" +
-                                        " , temp_max: " + cn.temperature.getMaxTemp() + "\n" +
-                                        " , temp_min: " + cn.temperature.getMinTemp() + "\n" +
-                                        " , speed: " + cn.wind.getSpeed() + "\n" +
-                                        " , deg: " + cn.wind.getDeg() + "\n" +
-                                        " , all: " + cn.clouds.getPerc() + "\n" +
-                                        " , icon_array: " + Arrays.toString(cn.getIconArray()) + "\n";
-                        Log.d("TAG", log);
-                    }
-                }
-                MyApplication.getInstance().getDb().close();
-            }
-        });
     }
 }

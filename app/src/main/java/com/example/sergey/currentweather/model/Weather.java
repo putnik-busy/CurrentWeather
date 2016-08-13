@@ -1,10 +1,29 @@
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.sergey.currentweather.model;
 
+/**
+ * Model Weather data
+ */
 public class Weather {
 
-    long cityID;
-    String nameCity;
-    byte[] iconArray;
+    private long mCityId;
+    private String mNameCity;
+    private byte[] mIconArray;
     public Location location = new Location();
     public CurrentCondition currentCondition = new CurrentCondition();
     public Temperature temperature = new Temperature();
@@ -133,26 +152,26 @@ public class Weather {
     }
 
     public long getCityID() {
-        return cityID;
+        return mCityId;
     }
 
     public void setCityID(long cityID) {
-        this.cityID = cityID;
+        this.mCityId = cityID;
     }
 
     public byte[] getIconArray() {
-        return iconArray;
+        return mIconArray;
     }
 
     public void setIconArray(byte[] iconArray) {
-        this.iconArray = iconArray;
+        this.mIconArray = iconArray;
     }
 
     public String getNameCity() {
-        return nameCity;
+        return mNameCity;
     }
 
     public void setNameCity(String nameCity) {
-        this.nameCity = nameCity;
+        this.mNameCity = nameCity;
     }
 }

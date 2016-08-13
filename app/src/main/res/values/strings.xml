@@ -4,7 +4,7 @@
         и повторите попытку.</string>
     <string name="timeout_network">Истек период ожидания ответа сервера. Повторите попытку
         позже</string>
-    <string name="add_city_text">Введите название города</string>
+    <string name="add_city_text">Введите название города латинскими буквами</string>
     <string name="error_city_add">Некорректно введен город</string>
     <string name="add_city_title">Добавление нового города</string>
     <string name="add">Добавить</string>

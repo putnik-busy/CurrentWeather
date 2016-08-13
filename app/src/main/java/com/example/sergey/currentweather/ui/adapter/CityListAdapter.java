@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.sergey.currentweather.ui.adapter;
 
 
@@ -21,12 +37,12 @@ import java.util.List;
 
 public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHolder> {
 
-    private List<Weather> data;
+    private List<Weather> mData;
     Context context;
 
     public CityListAdapter(Context context, List<Weather> data) {
         this.context = context;
-        this.data = data;
+        this.mData = data;
     }
 
     @Override
@@ -38,7 +54,7 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Weather weather = data.get(position);
+        Weather weather = mData.get(position);
         holder.name_city.setText(weather.location.getCity());
         holder.name_city.setTag(weather.getCityID());
         holder.temperature_city.setText(MessageFormat.format("{0}℃",
@@ -47,7 +63,7 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return mData.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder
@@ -81,21 +97,19 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
     }
 
     public void addItem(Weather weather) {
-        this.data.add(weather);
-      //  final int size = this.data.size();
-      //  notifyItemInserted(size);
+        this.mData.add(weather);
         notifyDataSetChanged();
     }
 
     public void addAll(List<Weather> items) {
-        final int size = this.data.size();
-        this.data.addAll(items);
+        final int size = this.mData.size();
+        this.mData.addAll(items);
         notifyItemRangeInserted(size, items.size());
     }
 
     public Weather removeItem(int position) {
-        final int size = this.data.size();
-        Weather weather = data.remove(position);
+        final int size = this.mData.size();
+        Weather weather = mData.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, size);
         return weather;

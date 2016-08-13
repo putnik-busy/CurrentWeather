@@ -11,7 +11,7 @@
         android:id="@+id/location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/black"/>
+        android:textColor="@android:color/black" />
 
     <RelativeLayout
         android:id="@+id/tempLyt"
@@ -215,6 +215,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="12dp"
             android:layout_toRightOf="@id/moonIcon"
+            android:textColor="@android:color/black"
             tools:ignore="RtlHardcoded" />
     </RelativeLayout>
 </RelativeLayout>

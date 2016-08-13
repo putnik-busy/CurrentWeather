@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.sergey.currentweather.app;
 
 
@@ -12,25 +28,25 @@ import com.example.sergey.currentweather.model.Weather;
 public class MyApplication extends Application {
 
     public static String TAG = MyApplication.class.getSimpleName();
-    private Weather weather;
-    private DataBaseHelper db;
-    private String cityAdd;
+    private Weather mWeather;
+    private DataBaseHelper mDb;
+    private String mCityAdd;
     private boolean mSaveInDatabase;
 
     private RequestQueue mRequestQueue;
-    private static MyApplication mInstance;
+    private static MyApplication sInstance;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mInstance = this;
-        db = new DataBaseHelper(this);
-        weather = new Weather();
+        sInstance = this;
+        mDb = new DataBaseHelper(this);
+        mWeather = new Weather();
         mSaveInDatabase = false;
     }
 
     public synchronized static MyApplication getInstance() {
-        return mInstance;
+        return sInstance;
     }
 
     public RequestQueue getRequestQueue() {
@@ -49,7 +65,7 @@ public class MyApplication extends Application {
         req.setTag(TAG);
         getRequestQueue().add(req);
     }
-
+    
     public void cancelPendingRequests(Object tag) {
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(tag);
@@ -57,30 +73,30 @@ public class MyApplication extends Application {
     }
 
     public Weather getWeather() {
-        return weather;
+        return mWeather;
     }
 
-    public void setWeather(Weather weather) {
-        this.weather = weather;
+    public void setWeather(Weather mWeather) {
+        this.mWeather = mWeather;
     }
 
     public DataBaseHelper getDb() {
-        return db;
+        return mDb;
     }
 
     public String getCityAdd() {
-        return cityAdd;
+        return mCityAdd;
     }
 
-    public void setCityAdd(String cityAdd) {
-        this.cityAdd = cityAdd;
+    public void setCityAdd(String mCityAdd) {
+        this.mCityAdd = mCityAdd;
     }
 
-    public boolean ismSaveInDatabase() {
+    public boolean isSaveInDatabase() {
         return mSaveInDatabase;
     }
 
-    public void setmSaveInDatabase(boolean mSaveInDatabase) {
+    public void setSaveInDatabase(boolean mSaveInDatabase) {
         this.mSaveInDatabase = mSaveInDatabase;
     }
 }

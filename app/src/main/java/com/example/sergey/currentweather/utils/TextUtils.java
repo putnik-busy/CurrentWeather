@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package com.example.sergey.currentweather.loadIcon;
+package com.example.sergey.currentweather.utils;
 
-
-import android.graphics.Bitmap;
-
-import com.android.volley.RequestQueue;
-
-public interface IWeatherImageProvider {
-
-    Bitmap getImage(String code, RequestQueue requestQueue, WeatherImageListener listener);
-
-    interface WeatherImageListener {
-        void onImageReady(Bitmap image);
+/**
+ * check String for null and empty
+ */
+public class TextUtils {
+    public static boolean IsEmptyOrNull(String temp){
+        return temp != null && !temp.isEmpty();
     }
 }

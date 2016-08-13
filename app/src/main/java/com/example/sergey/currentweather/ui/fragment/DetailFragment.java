@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.sergey.currentweather.ui.fragment;
 
 
@@ -60,16 +76,28 @@ public class DetailFragment extends Fragment {
         return v;
     }
 
+    /**
+     * set data in View
+     *
+     * @param result include data city
+     */
     public void setDataView(Weather result) {
         tvLocation.setText(String.format("%s,%s", result.location.getCity(),
                 result.location.getCountry()));
-        tvTemperature.setText(String.valueOf(Math.round(result.temperature.getTemp())));
-        tvTempMin.setText(MessageFormat.format("{0}°C ", Math.round(result.temperature.getMinTemp())));
-        tvTempMax.setText(MessageFormat.format("{0}°C", Math.round(result.temperature.getMaxTemp())));
-        tvWindSpeed.setText(MessageFormat.format("{0} км/ч ", Math.round(result.wind.getSpeed())));
-        tvWindDeg.setText(MessageFormat.format("{0}°", Math.round(result.wind.getDeg())));
-        tvHum.setText(MessageFormat.format("{0} %", Math.round(result.currentCondition.getHumidity())));
-        tvPress.setText(MessageFormat.format("{0} мбар - ", Math.round(result.currentCondition.getPressure())));
+        tvTemperature.setText(String.valueOf(
+                Math.round(result.temperature.getTemp())));
+        tvTempMin.setText(MessageFormat.format("{0}°C ",
+                Math.round(result.temperature.getMinTemp())));
+        tvTempMax.setText(MessageFormat.format("{0}°C",
+                Math.round(result.temperature.getMaxTemp())));
+        tvWindSpeed.setText(MessageFormat.format("{0} км/ч ",
+                Math.round(result.wind.getSpeed())));
+        tvWindDeg.setText(MessageFormat.format("{0}°",
+                Math.round(result.wind.getDeg())));
+        tvHum.setText(MessageFormat.format("{0} %",
+                Math.round(result.currentCondition.getHumidity())));
+        tvPress.setText(MessageFormat.format("{0} мбар - ",
+                Math.round(result.currentCondition.getPressure())));
         tvSunrise.setText(convertTime(result.location.getSunrise()));
         tvSunset.setText(convertTime(result.location.getSunset()));
         int resId = getResource(result.temperature.getTemp());
@@ -113,7 +141,8 @@ public class DetailFragment extends Fragment {
     }
 
     public void convertImage(final Weather result) {
-        Bitmap bitmap = BitmapFactory.decodeByteArray(result.getIconArray(), 0, result.getIconArray().length);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(result.getIconArray(), 0,
+                result.getIconArray().length);
         if (bitmap != null) {
             weatherImage.setImageBitmap(bitmap);
         }

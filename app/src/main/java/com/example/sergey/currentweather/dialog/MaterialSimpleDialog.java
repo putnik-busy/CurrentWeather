@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.sergey.currentweather.dialog;
 
 import android.app.Dialog;
@@ -12,8 +28,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.example.sergey.currentweather.AddListenerOnTextChange;
 import com.example.sergey.currentweather.R;
+import com.example.sergey.currentweather.utils.AddListenerOnTextChange;
+
+/**
+ * Simple dialog
+ */
 
 public class MaterialSimpleDialog extends DialogFragment {
     private String mPositive;
@@ -59,12 +79,12 @@ public class MaterialSimpleDialog extends DialogFragment {
         final TextInputEditText editText = (TextInputEditText) dialogView
                 .findViewById(R.id.add_city_edit);
         editText.addTextChangedListener(new AddListenerOnTextChange(editText));
-        AlertDialog.Builder adb = new AlertDialog.Builder(getActivity(),R.style.StyledDialog);
+        AlertDialog.Builder adb = new AlertDialog.Builder(getActivity(), R.style.StyledDialog);
         adb.setView(dialogView);
         adb.setCancelable(false);
         adb.setTitle(mTitle);
         adb.setPositiveButton(mPositive, mDialogInterfaceListener);
-        adb.setNegativeButton(mNegative,mDialogInterfaceListener);
+        adb.setNegativeButton(mNegative, mDialogInterfaceListener);
         return adb.create();
     }
 }
