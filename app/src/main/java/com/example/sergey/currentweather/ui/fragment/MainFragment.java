@@ -20,6 +20,7 @@ package com.example.sergey.currentweather.ui.fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -56,7 +57,10 @@ import com.example.sergey.currentweather.app.MyApplication;
 import com.example.sergey.currentweather.db.DataBaseHelper;
 import com.example.sergey.currentweather.dialog.MaterialSimpleDialog;
 import com.example.sergey.currentweather.model.Weather;
+import com.example.sergey.currentweather.ui.activity.DetailActivity;
 import com.example.sergey.currentweather.ui.adapter.CityListAdapter;
+import com.example.sergey.currentweather.ui.adapter.CityListAdapterClickListener;
+import com.example.sergey.currentweather.utils.CustomAnimationUtils;
 import com.example.sergey.currentweather.utils.SimpleHorizontalDivider;
 import com.example.sergey.currentweather.utils.TextUtils;
 
@@ -67,7 +71,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
-        View.OnClickListener {
+        View.OnClickListener, CityListAdapterClickListener {
 
     final String CITY_TEMP_URL = "http://api.openweathermap.org/data/2.5/weather?q=";
     final String API_KEY = "&appid=9b4c3bc3f65172d10f361ec0e1e1f2e4";
@@ -80,6 +84,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private CityListAdapter mCityListAdapter;
     private Paint mPoint;
     private ProgressDialog mProgressDialog;
+    private FloatingActionButton fab;
 
     public static MainFragment newInstance() {
         return new MainFragment();
@@ -89,7 +94,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mWeatherList = new ArrayList<>();
-        mCityListAdapter = new CityListAdapter(getActivity(), mWeatherList);
+        mCityListAdapter = new CityListAdapter(getActivity(), this, mWeatherList);
         mRecyclerView.addItemDecoration(new SimpleHorizontalDivider(getActivity()));
         mRecyclerView.setAdapter(mCityListAdapter);
         initSwipe();
@@ -110,6 +115,17 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        CustomAnimationUtils.fromRightToLeftShow(fab, getContext());
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        CustomAnimationUtils.fromRightToLeftShow(fab, getContext());
+        super.onDestroy();
+    }
 
     @Override
     public void onRefresh() {
@@ -200,7 +216,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.color_blue, R.color.color_green,
                 R.color.color_yellow, R.color.color_red);
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setOnClickListener(this);
         mPoint = new Paint();
     }
@@ -406,5 +422,15 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         Snackbar snackbar = Snackbar.make(mCoordinatorLayout, resId,
                 Snackbar.LENGTH_LONG);
         snackbar.show();
+    }
+
+    @Override
+    public void CityListItemClicked(View v, long position) {
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putLong("position", position);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        CustomAnimationUtils.fromLeftToRightHide(fab, getContext());
     }
 }

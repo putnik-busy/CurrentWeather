@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_container);
+        setContentView(R.layout.activity_main);
         if (savedInstanceState != null) {
             MyApplication.getInstance().setSaveInDatabase(
                     savedInstanceState.getBoolean(KEY_INDEX));
