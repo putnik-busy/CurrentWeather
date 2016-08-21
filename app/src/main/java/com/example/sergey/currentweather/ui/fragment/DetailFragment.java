@@ -43,6 +43,7 @@ public class DetailFragment extends Fragment {
             tvTempMax, tvHum, tvWindSpeed, tvWindDeg, tvPress,
             tvSunrise, tvSunset, lineTxt;
     ImageView weatherImage;
+    private boolean mIsDualPane;
 
     public void loadData(long position) {
         MyApplication.getInstance().getDb().getCityAsync(position,
