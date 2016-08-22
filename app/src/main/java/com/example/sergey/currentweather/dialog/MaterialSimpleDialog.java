@@ -44,6 +44,14 @@ public class MaterialSimpleDialog extends DialogFragment {
     public MaterialSimpleDialog() {
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("yes", mPositive);
+        outState.putString("no", mNegative);
+        outState.putString("title", mTitle);
+    }
+
     public void setListener(DialogInterface.OnClickListener listener) {
         this.mDialogInterfaceListener = listener;
     }
@@ -73,6 +81,12 @@ public class MaterialSimpleDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mPositive = savedInstanceState.getString("yes");
+            mNegative = savedInstanceState.getString("no");
+            mTitle = savedInstanceState.getString("title");
+        }
         Context dialogViewContext = getActivity();
         View dialogView = LayoutInflater.from(dialogViewContext)
                 .inflate(R.layout.simple_dialog, null);
